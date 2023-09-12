@@ -1,11 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Circunferencia</title>
-</head>
-<body>
-    
-</body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/themes/prism.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.27.0/prism.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="titulo">
+        <h1>Algoritmo de Bresemham</h1>
+        <h2>Circunferencia</h2>
+        <h3>Algoritmo de Bresemham para circulos</h3>
+      </div>
+    </header>
+    <main>
+      <pre>
+       <b>En graficacion&comma; el algoritmo &#34;midpoint circle&#34; es un algoritmo utilizado 
+       para  determinar los puntos necesarios para dibujar un circulo&period;</b> El algoritmo 
+       es una variante del algoritmo de la linea de Bresemham&comma; por lo cual es aveces 
+       conocido como algoritmo de circulo Bresemham&comma; aun que ne realidad no inventada 
+       por Bresemham&period;
+       
+       El algoritmo comienza en consecuencia con el circulo de la ecuacion x<sup>2</sup> &plus; y<sup>2</sup> &equals; r<sup>2</sup>&period; 
+       Asi&comma; el centro del circulo se encuentra en &lpar;0&comma;0&rpar;&period; Consideramos que solo la primera 
+       el octante primeray  trazar una curva que comienza en le punto &lpar;r&comma;0&rpar; y hacia arriba 
+       los ingresos y a la izquierda&comma; llegando al angulo de 45&deg;&period;
+
+       La direccion &#34;rapida&#34; aqui es la dieccion vertical&period; El algoritmo hace simpre un paso 
+       en la direccion positiva &lpar;hacia arriba&rpar;&comma; y de vez en cuando tambien tiene que hacer
+       un paso en la &#34;lenta&#34; la direccion&comma; la direccon x negativa.
+
+       De la ecuacion de un circulo se obtiene la ecuacion tranformada x<sup>2</sup> &plus; y<sup>2</sup> - r<sup>2</sup> &equals; 0
+       donde r<sup>2</sup> se calcula una sola vez durante la inicializacion&comma; y por lo tanto para la 
+       cordenada x&period; Ademas tenemos que a&nacute;adir las coordenada del punto medio al establecer 
+       un pixel&period; Estas adiciones frecuentas entero no limitan el rendimiento de mucho&comma; 
+       ya que puede prescindir de los cuadrados &lpar;root&rpar; los calculos en el lazo interno&comma; 
+       a su vez&period; Una vez mas el cero en la ecuacion del circulo tranformado se sustituye 
+       por el termino de error&period;
+
+       La inicializacion del termino de error se deriva de un desplazamiento de pixel 
+       y medio en la salida&period; Hasta la interseccion con la linea perpendicular&comma; esto 
+       conduce a un valor acumulado de r en el termino de error&comma; de modo que este 
+       valor se utiliza para la inicializacion&period;
+
+    </pre>
+    <pre>
+        <code class="language-java">
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+public class Circulo extends JPanel{
+    private int xc, yc, r;
+    private ArrayList<Punto> puntos;
+    public Circulo(int xc, int yc, int r){
+        this.setBounds(0, 0, 500, 500);        
+        this.xc = xc;
+        this.yc = yc;
+        this.r = r;
+        this.puntos = new ArrayList<Punto>();
+        algoritmo();
+    }     
+    public void algoritmo(){
+        int x ,y, d;
+        x = 0;
+        y = r;
+        d = 1 - r;
+        pintar(x, y);
+        while(x <= y){
+            x = x + 1;
+            if(d < 0){
+                d = d + 2 * x + 3;
+            }else{
+                 y = y - 1;
+                 d = d + 2 * (x - y) + 5;
+            }
+            pintar(x, y);
+        }
+    } 
+    private void pintar(int x, int y){
+        puntos.add(new Punto(xc + x, yc + y));
+        puntos.add(new Punto(xc - x, yc + y));
+        puntos.add(new Punto(xc + x, yc - y));
+        puntos.add(new Punto(xc - x, yc - y));
+        puntos.add(new Punto(xc + y, yc + x));
+        puntos.add(new Punto(xc - y, yc + x));
+        puntos.add(new Punto(xc + y, yc - x));
+        puntos.add(new Punto(xc - y, yc - x));
+        repaint();
+    }
+    @Override
+    public void paint(Graphics g){
+        super.paintComponents(g);
+        for(Punto p : puntos){
+            p.dibujar(g);
+        }        
+    } 
+    public static void main(String[] args){
+        JFrame f = new JFrame("Bresenham");
+        f.setLayout(null);
+        f.setBackground(Color.WHITE);
+        Circulo circulo = new Circulo(250, 250, 100);
+        f.add(circulo);
+        f.setSize(500, 500);
+        f.setVisible(true);
+        f.setLocationRelativeTo(null);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+    } 
+    private class Punto{
+        public int x ,y;
+        public Punto(int x ,int y){
+            this.x = x;
+            this.y = y;
+        }
+        public void dibujar(Graphics g){
+            g.setColor(Color.RED);
+            g.drawOval(x, y, 1, 1);
+            g.fillOval(x, y, 1, 1);  
+        }
+    }
+}
+     </code>
+    </pre>
+    </main>
+  </body>
 </html>
